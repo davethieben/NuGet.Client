@@ -147,7 +147,7 @@ namespace NuGet.PackageManagement.UI
             _packageDetail.Control = this;
             _packageDetail.Visibility = Visibility.Hidden;
 
-            SetTitle();
+            NuGetUIThreadHelper.JoinableTaskFactory.RunAsync(SetTitleAsync).FileAndForget(TelemetryUtility.CreateFileAndForgetEventName(nameof(PackageManagerControl), nameof(SetTitleAsync)));
 
             _topPanel.IsSolution = Model.IsSolution;
             if (_topPanel.IsSolution)
@@ -220,10 +220,9 @@ namespace NuGet.PackageManagement.UI
                 if (currentFullPath == newFullPath)
                 {
                     Model.Context.Projects = new[] { e.NuGetProject };
-                    SetTitle();
+                    NuGetUIThreadHelper.JoinableTaskFactory.RunAsync(SetTitleAsync).FileAndForget(TelemetryUtility.CreateFileAndForgetEventName(nameof(PackageManagerControl), nameof(SetTitleAsync)));
                 }
             }
-
         }
 
         private void SolutionManager_ProjectsChanged(object sender, NuGetProjectEventArgs e)
@@ -644,7 +643,7 @@ namespace NuGet.PackageManagement.UI
             _packageDetail.Refresh();
         }
 
-        private void SetTitle()
+        private async Task SetTitleAsync()
         {
             if (Model.IsSolution)
             {
@@ -653,13 +652,23 @@ namespace NuGet.PackageManagement.UI
             else
             {
                 var project = Model.Context.Projects.FirstOrDefault();
+                string projectName = null;
 
-                if (project == null ||
-                    !project.TryGetMetadata<string>(NuGetProjectMetadataKeys.Name, out var projectName))
+                if (project != null)
+                {
+                    (bool success, object value) = await project.TryGetMetadataAsync(NuGetProjectMetadataKeys.Name, CancellationToken.None);
+                    if (success)
+                    {
+                        projectName = (string)value;
+                    }
+                }
+
+                if(string.IsNullOrWhiteSpace(projectName))
                 {
                     projectName = "unknown";
                 }
 
+                await NuGetUIThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 _topPanel.Title = string.Format(
                     CultureInfo.CurrentCulture,
                     Resx.Resources.Label_PackageManager,
@@ -1114,8 +1123,7 @@ namespace NuGet.PackageManagement.UI
                 NuGetUIThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     await NuGetUIThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    var installedPackages = await PackageCollection.FromProjectsAsync(Model.Context.Projects,
-                        CancellationToken.None);
+                    var installedPackages = await PackageCollection.FromProjectsAsync(Model.Context.Projects, CancellationToken.None);
                     _packageList.UpdatePackageStatus(installedPackages.ToArray());
                 })
                 .FileAndForget(TelemetryUtility.CreateFileAndForgetEventName(nameof(PackageManagerControl), nameof(Refresh)));
