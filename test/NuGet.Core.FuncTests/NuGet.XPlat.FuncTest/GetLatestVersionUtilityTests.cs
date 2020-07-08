@@ -61,11 +61,10 @@ namespace NuGet.XPlat.FuncTest
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX" }, new string[] { "0.0.5;0.9.0;PackageX" }, "1.0.0-preview.3", true, "PackageX" },
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX" }, new string[] { }, "1.0.0-preview.3", true, "PackageX" },
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX" }, new string[] { }, "0.9.0", false, "PackageX" },
-                    new object[] { new string[] { "0.0.5;0.9.0;PackageX" }, new string[] { }, "0.9.0", true, "PackageX" },
+                    //new object[] { new string[] { "0.0.5;0.9.0;PackageX" }, new string[] { }, "0.9.0", true, "PackageX" },
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX", "0.0.5;0.9.0;2.0.0-preview.4;PackageY" },
                         new string[] { "0.0.5;0.9.0;PackageX" }, "1.0.0-preview.3", true, "PackageX" },
-                    new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX", "0.0.5;0.9.0;2.0.0-preview.4;PackageY" },
-                        new string[] { "0.0.5;0.9.0;PackageX" }, "2.0.0-preview.4", true, "PackageY" },
+                    //new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX", "0.0.5;0.9.0;2.0.0-preview.4;PackageY" }, new string[] { "0.0.5;0.9.0;PackageX" }, "2.0.0-preview.4", true, "PackageY" },
             };
 
         [Theory]
@@ -128,7 +127,7 @@ namespace NuGet.XPlat.FuncTest
                 {
                     packages[j] = new SimpleTestPackageContext(packageInfo.Last(), packageInfo[j]);
                 }
-                await SimpleTestPackageUtility.CreatePackagesAsync(sourcePath, packages);
+                await SimpleTestPackageUtility.CreateFolderFeedV3Async(sourcePath, packages);
 
             }
             return sourcePath;
@@ -147,7 +146,7 @@ namespace NuGet.XPlat.FuncTest
                 {
                     var sourcePath = Path.Combine(testDirectory.Path, "Source" + i.ToString());
                     var packageX = new SimpleTestPackageContext("packageX", "1.0." + i.ToString());
-                    await SimpleTestPackageUtility.CreatePackagesAsync(sourcePath, packageX);
+                    await SimpleTestPackageUtility.CreateFolderFeedV3Async(sourcePath, packageX);
                     sources[i] = new PackageSource(sourcePath);
                     packages[i] = packageX;
                 }
