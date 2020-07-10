@@ -79,7 +79,7 @@ namespace NuGet.CommandLine.XPlat.Utility
                     CancellationToken.None
                 );
 
-                return packages.LastOrDefault()?.Identity.Version;
+                return packages?.Max(x => x.Identity.Version); ;
             }
         }
 
