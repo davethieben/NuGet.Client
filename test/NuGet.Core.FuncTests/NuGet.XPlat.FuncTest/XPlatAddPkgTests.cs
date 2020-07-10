@@ -279,7 +279,7 @@ namespace NuGet.XPlat.FuncTest
 
         [Theory]
         [MemberData(nameof(AddPkg_PackageVersionsLatestPrereleaseSucessData))]
-        public async Task AddPkg_UnconditionalAddPrereleaseSucess(string[] inputVersions, string expectedVersion, bool prerelease)
+        public async Task AddPkg_UnconditionalAddPrereleaseSuccess(string[] inputVersions, string expectedVersion, bool prerelease)
         {
             // Arrange
             using (var pathContext = new SimpleTestPathContext())
@@ -303,7 +303,7 @@ namespace NuGet.XPlat.FuncTest
 
                 // Assert
                 Assert.Equal(0, result);
-                Assert.True(XPlatTestUtils.ValidateReference(projectXmlRoot, packages[0].Id, expectedVersion));
+                Assert.True(XPlatTestUtils.ValidateReference(projectXmlRoot, packages[0].Id, expectedVersion), projectXmlRoot.ToString());
             }
         }
 
@@ -1043,7 +1043,7 @@ namespace NuGet.XPlat.FuncTest
                 // Assert
                 // Verify that the only package reference is with the new version
                 Assert.Equal(0, result);
-                Assert.True(XPlatTestUtils.ValidateReference(projectXmlRoot, packages[0].Id, noVersion ? latestVersion : userInputVersionNew));
+                Assert.True(XPlatTestUtils.ValidateReference(projectXmlRoot, packages[0].Id, noVersion ? latestVersion : userInputVersionNew), projectXmlRoot.ToString());
             }
         }
 

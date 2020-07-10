@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NuGet.CommandLine.XPlat.Utility;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
@@ -20,7 +21,7 @@ using NuGet.ProjectModel;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
-namespace NuGet.CommandLine.XPlat.Utility
+namespace NuGet.CommandLine.XPlat
 {
     public class AddPackageReferenceCommandRunner : IPackageReferenceCommandRunner
     {
