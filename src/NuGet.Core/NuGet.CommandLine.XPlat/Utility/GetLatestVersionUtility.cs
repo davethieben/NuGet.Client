@@ -46,7 +46,7 @@ namespace NuGet.CommandLine.XPlat.Utility
             foreach (var t in tasks)
             {
                 var result = await t;
-                if(result != null)
+                if (result != null)
                 {
                     latestReleaseList.Add(await t);
                 }
@@ -93,15 +93,15 @@ namespace NuGet.CommandLine.XPlat.Utility
         {
             using (var settingsLoadingContext = new SettingsLoadingContext())
             {
-                var settings = Settings.LoadImmutableSettingsGivenConfigPaths(configFilePaths, settingsLoadingContext);
+                ISettings settings = Settings.LoadImmutableSettingsGivenConfigPaths(configFilePaths, settingsLoadingContext);
                 var packageSources = new List<PackageSource>();
 
                 var packageSourceProvider = new PackageSourceProvider(settings);
-                var packageProviderSources = packageSourceProvider.LoadPackageSources();
+                IEnumerable<PackageSource> packageProviderSources = packageSourceProvider.LoadPackageSources();
 
-                for (var i = 0; i < requestedSources.Count; i++)
+                for (int i = 0; i < requestedSources.Count; i++)
                 {
-                    var matchedSource = packageProviderSources.FirstOrDefault(e => e.Source == requestedSources[i].Source);
+                    PackageSource matchedSource = packageProviderSources.FirstOrDefault(e => e.Source == requestedSources[i].Source);
                     if (matchedSource == null)
                     {
                         packageSources.Add(requestedSources[i]);

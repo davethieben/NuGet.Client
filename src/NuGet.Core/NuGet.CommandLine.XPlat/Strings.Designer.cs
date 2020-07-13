@@ -421,7 +421,7 @@ namespace NuGet.CommandLine.XPlat {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no stable versions available for the package &apos;{0}&apos;..
+        ///   Looks up a localized string similar to There are no versions available for the package &apos;{0}&apos;..
         /// </summary>
         internal static string Error_NoVersionsAvailable {
             get {

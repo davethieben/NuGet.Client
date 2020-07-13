@@ -74,8 +74,8 @@ namespace NuGet.XPlat.FuncTest
             using (var testDirectory = TestDirectory.Create())
             {
                 // Arange
-                var sourceAPath = await GetSourceWithPackages(sourceA, testDirectory, "SourceA");
-                var sourceBPath = await GetSourceWithPackages(sourceB, testDirectory, "SourceB");
+                string sourceAPath = await GetSourceWithPackages(sourceA, testDirectory, "SourceA");
+                string sourceBPath = await GetSourceWithPackages(sourceB, testDirectory, "SourceB");
 
                 var sources = new PackageSource[] { new PackageSource(sourceAPath), new PackageSource(sourceBPath) };
 

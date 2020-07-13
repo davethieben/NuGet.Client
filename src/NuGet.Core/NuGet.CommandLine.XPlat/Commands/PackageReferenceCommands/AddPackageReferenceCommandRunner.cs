@@ -27,7 +27,6 @@ namespace NuGet.CommandLine.XPlat
     {
         public async Task<int> ExecuteCommand(PackageReferenceArgs packageReferenceArgs, MSBuildAPIUtility msBuild)
         {
-            
             packageReferenceArgs.Logger.LogInformation(string.Format(CultureInfo.CurrentCulture,
                 Strings.Info_AddPkgAddingReference,
                 packageReferenceArgs.PackageId,
