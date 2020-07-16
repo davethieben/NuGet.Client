@@ -10,7 +10,6 @@ using NuGet.CommandLine.XPlat.Utility;
 using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Configuration.Test;
-using NuGet.Packaging.Core;
 using NuGet.Test.Utility;
 using NuGet.Versioning;
 using Xunit;
@@ -18,7 +17,7 @@ using Xunit;
 namespace NuGet.XPlat.FuncTest
 {
     [Collection("NuGet XPlat Test Collection")]
-    public class GetLatestVersionUtilityTests
+    public class AddPackageCommandUtilityTests
     {
         [Fact]
         public void EvaluateSources_GivenConfigWithCredentials_ReturnsPackageSourceWithCredentials()
@@ -47,7 +46,7 @@ namespace NuGet.XPlat.FuncTest
                 var settingsLoadContext = new SettingsLoadingContext();
 
                 var settings = Settings.LoadImmutableSettingsGivenConfigPaths(new string[] { configPath }, settingsLoadContext);
-                var result = GetLatestVersionUtility.EvaluateSources(source, settings.GetConfigFilePaths());
+                var result = AddPackageCommandUtility.EvaluateSources(source, settings.GetConfigFilePaths());
 
                 // Asert
                 Assert.Equal(2, result.Count);
@@ -61,10 +60,10 @@ namespace NuGet.XPlat.FuncTest
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX" }, new string[] { "0.0.5;0.9.0;PackageX" }, "1.0.0-preview.3", true, "PackageX" },
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX" }, new string[] { }, "1.0.0-preview.3", true, "PackageX" },
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX" }, new string[] { }, "0.9.0", false, "PackageX" },
-                    //new object[] { new string[] { "0.0.5;0.9.0;PackageX" }, new string[] { }, "0.9.0", true, "PackageX" },
+                    new object[] { new string[] { "0.0.5;0.9.0;PackageX" }, new string[] { }, "0.9.0", true, "PackageX" },
                     new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX", "0.0.5;0.9.0;2.0.0-preview.4;PackageY" },
                         new string[] { "0.0.5;0.9.0;PackageX" }, "1.0.0-preview.3", true, "PackageX" },
-                    //new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX", "0.0.5;0.9.0;2.0.0-preview.4;PackageY" }, new string[] { "0.0.5;0.9.0;PackageX" }, "2.0.0-preview.4", true, "PackageY" },
+                    new object[] { new string[] { "0.0.5;0.9.0;1.0.0-preview.3;PackageX", "0.0.5;0.9.0;2.0.0-preview.4;PackageY" }, new string[] { "0.0.5;0.9.0;PackageX" }, "2.0.0-preview.4", true, "PackageY" },
             };
 
         [Theory]
@@ -81,7 +80,7 @@ namespace NuGet.XPlat.FuncTest
 
                 // Act
                 var logger = NullLogger.Instance;
-                var result = await GetLatestVersionUtility.GetLatestVersionFromSources(sources, logger, package, prerelease);
+                var result = await AddPackageCommandUtility.GetLatestVersionFromSources(sources, logger, package, prerelease);
 
                 //Asert
                 Assert.Equal(new NuGetVersion(expectedVersion), result);
@@ -109,7 +108,7 @@ namespace NuGet.XPlat.FuncTest
 
                 // Act
                 var logger = NullLogger.Instance;
-                var result = await GetLatestVersionUtility.GetLatestVersionFromSources(sources, logger, package, prerelease);
+                var result = await AddPackageCommandUtility.GetLatestVersionFromSources(sources, logger, package, prerelease);
 
                 //Asert
                 Assert.Equal(null, result);
@@ -153,7 +152,7 @@ namespace NuGet.XPlat.FuncTest
 
                 // Act
                 var logger = NullLogger.Instance;
-                var result = await GetLatestVersionUtility.GetLatestVersionFromSources(sources, logger, packages.Last().Id, false);
+                var result = await AddPackageCommandUtility.GetLatestVersionFromSources(sources, logger, packages.Last().Id, false);
 
                 // Assert
                 Assert.Equal(packages.Last().Identity.Version, result);

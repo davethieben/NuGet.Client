@@ -315,7 +315,7 @@ namespace NuGet.XPlat.FuncTest
 
         [Theory]
         [MemberData(nameof(AddPkg_PackageVersionsLatestPrereleasNoStableAvailableData))]
-        public async Task AddPkg_NoPackageAvailable(string[] inputVersions, bool prerelease)
+        public async Task AddPkg_NoStablePackageAvailable(string[] inputVersions, bool prerelease)
         {
             // Arrange
             using (var pathContext = new SimpleTestPathContext())
@@ -335,7 +335,31 @@ namespace NuGet.XPlat.FuncTest
 
                 // Act & Assert
                 var result = await Assert.ThrowsAsync<CommandException>(() => commandRunner.ExecuteCommand(packageArgs, msBuild));
-                Assert.Equal(string.Format(CultureInfo.CurrentCulture, Strings.Error_NoVersionsAvailable, packages[0].Id), result.Message);
+                Assert.Equal(string.Format(CultureInfo.CurrentCulture, Strings.PrereleaseVersionsAvailable, packages.Max(x => x.Identity.Version)), result.Message);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task AddPkg_NoVersionsAvailable(bool prerelease)
+        {
+            // Arrange
+            using (var pathContext = new SimpleTestPathContext())
+            {
+                var projectA = XPlatTestUtils.CreateProject(ProjectName, pathContext, "net46; netcoreapp1.0");
+                await SimpleTestPackageUtility.CreateFolderFeedV3Async(
+                    pathContext.PackageSource,
+                    PackageSaveMode.Defaultv3,
+                    XPlatTestUtils.CreatePackage(packageVersion: "1.0.0"));
+
+                var packageArgs = XPlatTestUtils.GetPackageReferenceArgs("packageY", projectA, noVersion: true, prerelease: prerelease);
+                var commandRunner = new AddPackageReferenceCommandRunner();
+                var msBuild = MsBuild;
+
+                // Act & Assert
+                var result = await Assert.ThrowsAsync<CommandException>(() => commandRunner.ExecuteCommand(packageArgs, msBuild));
+                Assert.Equal(string.Format(CultureInfo.CurrentCulture, Strings.Error_NoVersionsAvailable, "packageY"), result.Message);
             }
         }
 

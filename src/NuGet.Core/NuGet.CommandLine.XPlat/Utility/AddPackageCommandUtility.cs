@@ -14,7 +14,7 @@ using NuGet.Versioning;
 
 namespace NuGet.CommandLine.XPlat.Utility
 {
-    public static class GetLatestVersionUtility
+    public static class AddPackageCommandUtility
     {
         /// <summary>
         /// Return the latest version available in the sources
@@ -23,7 +23,7 @@ namespace NuGet.CommandLine.XPlat.Utility
         /// <param name="logger">Logger</param>
         /// <param name="packageId">Package to look for</param>
         /// <param name="prerelease">Whether to include prerelease versions</param>
-        /// <returns></returns>
+        /// <returns>Return the latest version available from multiple sources and if no version is found returns null.</returns>
         public static async Task<NuGetVersion> GetLatestVersionFromSources(IList<PackageSource> sources, ILogger logger, string packageId, bool prerelease)
         {
             var maxTasks = Environment.ProcessorCount;
@@ -32,7 +32,7 @@ namespace NuGet.CommandLine.XPlat.Utility
 
             foreach (var source in sources)
             {
-                tasks.Add(Task.Run(() => GetLatestVersionFromSource(source, logger, packageId, prerelease)));
+                tasks.Add(Task.Run(() => GetLatestVersionFromSourceAsync(source, logger, packageId, prerelease)));
                 if (maxTasks <= tasks.Count)
                 {
                     var finishedTask = await Task.WhenAny(tasks);
@@ -48,7 +48,7 @@ namespace NuGet.CommandLine.XPlat.Utility
                 var result = await t;
                 if (result != null)
                 {
-                    latestReleaseList.Add(await t);
+                    latestReleaseList.Add(result);
                 }
             }
 
@@ -62,8 +62,8 @@ namespace NuGet.CommandLine.XPlat.Utility
         /// <param name="logger">Logger</param>
         /// <param name="packageId">Package to look for</param>
         /// <param name="prerelease">Whether to include prerelease versions</param>
-        /// <returns></returns>
-        public static async Task<NuGetVersion> GetLatestVersionFromSource(PackageSource source, ILogger logger, string packageId, bool prerelease)
+        /// <returns>Returns the latest version available from a source or a null if non is found.</returns>
+        public static async Task<NuGetVersion> GetLatestVersionFromSourceAsync(PackageSource source, ILogger logger, string packageId, bool prerelease)
         {
             SourceRepository repository = Repository.Factory.GetCoreV3(source);
             PackageMetadataResource resource = await repository.GetResourceAsync<PackageMetadataResource>();
@@ -79,7 +79,7 @@ namespace NuGet.CommandLine.XPlat.Utility
                     CancellationToken.None
                 );
 
-                return packages?.Max(x => x.Identity.Version); ;
+                return packages?.Max(x => x.Identity.Version);
             }
         }
 
@@ -88,7 +88,7 @@ namespace NuGet.CommandLine.XPlat.Utility
         /// </summary>
         /// <param name="requestedSources">Sources to match</param>
         /// <param name="configFilePaths">Config to use for credentials</param>
-        /// <returns></returns>
+        /// <returns>Return a list of package sources</returns>
         public static List<PackageSource> EvaluateSources(IList<PackageSource> requestedSources, IList<string> configFilePaths)
         {
             using (var settingsLoadingContext = new SettingsLoadingContext())

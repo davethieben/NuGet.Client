@@ -713,13 +713,18 @@ For more information, visit https://docs.nuget.org/docs/reference/command-line-r
     <value>Adds a client certificate configuration that matches the given package source name.</value>
   </data>
   <data name="AddPkg_PackagePrerelease" xml:space="preserve">
-    <value>Consider prerelease packages when determining the latest version to install.</value>
+    <value>Allows prerelease packages to be installed.</value>
   </data>
   <data name="Error_PrereleaseWhenVersionSpecified" xml:space="preserve">
     <value>The --prerelease and --version options are not supported in the same command.</value>
+    <comment>Please don't localize "prerelease" and "version"</comment>
   </data>
   <data name="Error_NoVersionsAvailable" xml:space="preserve">
     <value>There are no versions available for the package '{0}'.</value>
     <comment>{0} - PackageID</comment>
+  </data>
+  <data name="PrereleaseVersionsAvailable" xml:space="preserve">
+    <value>There are no stable version available, {0} is the latest available</value>
+    <comment>{0} - Package Version</comment>
   </data>
 </root>

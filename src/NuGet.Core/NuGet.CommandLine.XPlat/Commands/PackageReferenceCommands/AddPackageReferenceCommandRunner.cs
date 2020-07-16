@@ -48,6 +48,7 @@ namespace NuGet.CommandLine.XPlat
                 {
                     versionRange = VersionRange.Parse(packageReferenceArgs.PackageVersion);
                 }
+
                 var libraryDependency = new LibraryDependency
                 {
                     LibraryRange = new LibraryRange(
@@ -104,11 +105,21 @@ namespace NuGet.CommandLine.XPlat
             PackageDependency packageDependency = default;
             if (packageReferenceArgs.NoVersion)
             {
-                var latestVersion = await GetLatestVersion(originalPackageSpec, packageReferenceArgs.PackageId, packageReferenceArgs.Logger, packageReferenceArgs.Prerelease);
+                var latestVersion = await GetLatestVersionAsync(originalPackageSpec, packageReferenceArgs.PackageId, packageReferenceArgs.Logger, packageReferenceArgs.Prerelease);
+
                 if (latestVersion == null)
                 {
+                    if (!packageReferenceArgs.Prerelease)
+                    {
+                        latestVersion = await GetLatestVersionAsync(originalPackageSpec, packageReferenceArgs.PackageId, packageReferenceArgs.Logger, !packageReferenceArgs.Prerelease);
+                        if (latestVersion != null)
+                        {
+                            throw new CommandException(string.Format(CultureInfo.CurrentCulture, Strings.PrereleaseVersionsAvailable, latestVersion));
+                        }
+                    }
                     throw new CommandException(string.Format(CultureInfo.CurrentCulture, Strings.Error_NoVersionsAvailable, packageReferenceArgs.PackageId));
                 }
+
                 packageDependency = new PackageDependency(packageReferenceArgs.PackageId, new VersionRange(minVersion: latestVersion, includeMinVersion: true));
             }
             else
@@ -216,22 +227,22 @@ namespace NuGet.CommandLine.XPlat
             return 0;
         }
 
-        public static async Task<NuGetVersion> GetLatestVersion(PackageSpec originalPackageSpec, string packageId, ILogger logger, bool prerelease)
+        public static async Task<NuGetVersion> GetLatestVersionAsync(PackageSpec originalPackageSpec, string packageId, ILogger logger, bool prerelease)
         {
-            IList<PackageSource> sources = GetLatestVersionUtility.EvaluateSources(originalPackageSpec.RestoreMetadata.Sources, originalPackageSpec.RestoreMetadata.ConfigFilePaths);
+            IList<PackageSource> sources = AddPackageCommandUtility.EvaluateSources(originalPackageSpec.RestoreMetadata.Sources, originalPackageSpec.RestoreMetadata.ConfigFilePaths);
 
-            return await GetLatestVersionUtility.GetLatestVersionFromSources(sources, logger, packageId, prerelease);
+            return await AddPackageCommandUtility.GetLatestVersionFromSources(sources, logger, packageId, prerelease);
         }
 
         private static LibraryDependency GenerateLibraryDependency(
             PackageSpec project,
             PackageReferenceArgs packageReferenceArgs,
             RestoreResultPair restorePreviewResult,
-            IEnumerable<NuGetFramework> UserSpecifiedFrameworks,
+            IEnumerable<NuGetFramework> userSpecifiedFrameworks,
             PackageDependency packageDependency)
         {
             // get the package resolved version from restore preview result
-            var resolvedVersion = GetPackageVersionFromRestoreResult(restorePreviewResult, packageReferenceArgs, UserSpecifiedFrameworks);
+            var resolvedVersion = GetPackageVersionFromRestoreResult(restorePreviewResult, packageReferenceArgs, userSpecifiedFrameworks);
 
             // correct package version to write in project file
             var version = packageDependency.VersionRange;

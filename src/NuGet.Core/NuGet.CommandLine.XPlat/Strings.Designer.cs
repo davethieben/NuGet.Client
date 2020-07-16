@@ -151,7 +151,7 @@ namespace NuGet.CommandLine.XPlat {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider prerelease packages when determining the latest version to install..
+        ///   Looks up a localized string similar to Allows prerelease packages to be installed..
         /// </summary>
         internal static string AddPkg_PackagePrerelease {
             get {
@@ -1298,6 +1298,15 @@ namespace NuGet.CommandLine.XPlat {
         internal static string PackCommand_Description {
             get {
                 return ResourceManager.GetString("PackCommand_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no stable version available, {0} is the latest available.
+        /// </summary>
+        internal static string PrereleaseVersionsAvailable {
+            get {
+                return ResourceManager.GetString("PrereleaseVersionsAvailable", resourceCulture);
             }
         }
         
