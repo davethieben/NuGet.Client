@@ -91,7 +91,7 @@ namespace NuGet.VisualStudio.Common
 
                 _semaphore.Dispose();
             }
-            ).FileAndForget(TelemetryUtility.CreateFileAndForgetEventName(nameof(OutputConsoleLogger), nameof(Dispose)));
+            ).PostOnFailure(nameof(OutputConsoleLogger), nameof(Dispose));
         }
 
         public void End()
@@ -203,7 +203,7 @@ namespace NuGet.VisualStudio.Common
         {
             NuGetUIThreadHelper.JoinableTaskFactory
                                .RunAsync(() => _semaphore.ExecuteAsync(action))
-                               .FileAndForget(TelemetryUtility.CreateFileAndForgetEventName(nameof(OutputConsoleLogger), methodName));
+                               .PostOnFailure(nameof(OutputConsoleLogger), methodName);
         }
     }
 }
