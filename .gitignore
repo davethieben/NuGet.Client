@@ -35,6 +35,7 @@ mergelog.txt
 *.sln.docstates
 
 # Build results
+/dist
 
 # Roslyn cache directories
 **/*.ide/
