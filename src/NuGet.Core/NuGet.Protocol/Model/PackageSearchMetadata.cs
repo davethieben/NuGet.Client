@@ -205,6 +205,16 @@ namespace NuGet.Protocol
         [JsonProperty(PropertyName = JsonProperties.Deprecation)]
         public PackageDeprecationMetadata DeprecationMetadata { get; private set; }
 
-        public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync() => Task.FromResult(DeprecationMetadata);
+//        public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync() => Task.FromResult(DeprecationMetadata);
+        public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync() => Task.FromResult(new PackageDeprecationMetadata()
+        {
+            Message = "deprecation foo.package1",
+            Reasons = new List<string>() { "bar 1", "bar 2"},
+            AlternatePackage = new AlternatePackageMetadata()
+            {
+                PackageId = "Foo.Package1",
+                Range = new VersionRange(new NuGetVersion(1,5,5))
+            }
+        });
     }
 }
